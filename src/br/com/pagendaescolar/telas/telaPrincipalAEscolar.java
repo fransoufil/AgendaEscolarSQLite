@@ -47,7 +47,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     
 }
 
-    private void cadastrar_evento() {
+    private void adicionar_evento() {
 
         Statement stmt = null;
         String evento, materia, descricao, data, datalimite, status;
@@ -474,7 +474,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
-        cadastrar_evento();
+        adicionar_evento();
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     /**

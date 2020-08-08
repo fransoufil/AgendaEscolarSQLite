@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
 
 /**
  *
@@ -33,6 +34,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     public telaPrincipalAEscolar() {
         initComponents();
         atualiza_datahoje();
+        carregar_tabela_eventos();
 
     }
 
@@ -174,23 +176,73 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
     }
 
+    private void setar_campos() {
+
+        int setar = tblEventos.getSelectedRow();
+        txtId.setText(tblEventos.getModel().getValueAt(setar, 0).toString());
+
+    }
+
     private void pesquisar_evento_id() {
 
-        String idevento = txtId.getText();
-
-        Statement stmt = null;
+        Integer idevento = Integer.parseInt(txtId.getText());
 
         try {
 
-            String sql = "SELECT * FROM tbl_eventos WHERE id_evento = " + idevento;
+            String sql = "SELECT id_evento, nome_evento, disciplina_evento, descricao_evento, data_evento, data_limite, status_evento FROM tbl_eventos WHERE id_evento = " + idevento;
 
-            conexao = ConexaoAEscolar.conector();
-            conexao.setAutoCommit(false);
-            stmt = (Statement) conexao.createStatement();
-            
-            rs = stmt.executeQuery(sql);
+            try {
+
+                //conexao = ConexaoAEscolar.conector();
+                //conexao.setAutoCommit(false);
+                pst = conexao.prepareStatement(sql);
+
+                rs = pst.executeQuery();
+
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(null, "Erro na conexao: " + e);
+            }
+
+            txtId.setText(rs.getString(1));
+            txtEvento.setText(rs.getString(2));
+            comboMateria.setSelectedItem(rs.getString(3));
+            txtDescricao.setText(rs.getString(4));
+            lblDataCalendario.setText(rs.getString(5));
+            lblDataLimite.setText(rs.getString(6));
+            comboStatus.setSelectedItem(rs.getString(7));
 
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro na pesquisa: " + e);
+        }
+
+    }
+
+    private void carregar_tabela_eventos() {
+
+        try {
+
+            String sqltabela = "SELECT * FROM tbl_eventos";
+
+            //Statement stmt = null;
+            conexao = ConexaoAEscolar.conector();
+            conexao.setAutoCommit(false);
+
+            pst = conexao.prepareStatement(sqltabela);
+
+            rs = pst.executeQuery();
+
+            System.out.println(rs);
+
+//            stmt = (Statement) conexao.createStatement();
+//            
+//            rs = stmt.executeQuery(sqltabela);
+            tblEventos.setModel(DbUtils.resultSetToTableModel(rs));
+            pst = null;
+            rs = null;
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
 
     }
@@ -215,7 +267,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         btnAlterar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblEventos = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         comboMateria = new javax.swing.JComboBox<>();
         lblUsuario = new java.awt.Label();
@@ -284,7 +336,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("EXCLUIR");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblEventos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -361,8 +413,13 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 "Evento", "Matéria", "Descrição", "Dt Limite"
             }
         ));
-        jTable1.setShowGrid(true);
-        jScrollPane2.setViewportView(jTable1);
+        tblEventos.setShowGrid(true);
+        tblEventos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblEventosMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblEventos);
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Matéria:");
@@ -402,6 +459,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         jLabel5.setText("Id");
 
         txtId.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtId.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -435,15 +493,17 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                                 .addGap(2, 2, 2)
                                 .addComponent(comboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 151, Short.MAX_VALUE)
-                                .addComponent(lblDataLimite))))
+                                .addGap(12, 12, 12)
+                                .addComponent(lblDataLimite)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addComponent(txtEvento, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
                     .addComponent(comboMateria, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -491,9 +551,10 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                     .addComponent(jCalendario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblDataLimite)
                     .addComponent(lblDataCalendario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblDataLimite))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(lblUsuario, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(lblDataHoje)))
@@ -588,6 +649,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         adicionar_evento();
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
+    private void tblEventosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEventosMouseClicked
+        setar_campos();
+        pesquisar_evento_id();
+    }//GEN-LAST:event_tblEventosMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -645,11 +711,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
     private java.awt.Label lblDataCalendario;
     private javax.swing.JLabel lblDataHoje;
     private javax.swing.JLabel lblDataLimite;
     public static java.awt.Label lblUsuario;
+    private javax.swing.JTable tblEventos;
     private javax.swing.JTextArea txtDescricao;
     private javax.swing.JTextField txtEvento;
     private javax.swing.JTextField txtId;

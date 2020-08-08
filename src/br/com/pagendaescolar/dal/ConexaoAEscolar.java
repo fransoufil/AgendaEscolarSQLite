@@ -32,7 +32,7 @@ public class ConexaoAEscolar {
         
         try {
             
-            String url = "jdbc:sqlite:/home/franz/sql_Agenda_Escolar";
+            String url = "jdbc:sqlite:/home/franz/NetBeansProjects/pAgendaEscolar/sql_Agenda_Escolar";
             
             Connection conexao = DriverManager.getConnection(url);
             

@@ -56,9 +56,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         lblDataCalendario.setText(strData);
 
     }
-    
-    private void atualiza_datahoje(){
-        
+
+    private void atualiza_datahoje() {
+
         //aqui código para data de hoje no lblDataHoje
         // substitui a label pela data atual
         Date data = new Date();
@@ -66,7 +66,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         //essa classe já formata em string
 
         lblDataHoje.setText(formatador.format(data));
-        
+
     }
 
     private void adicionar_evento() {
@@ -103,7 +103,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 conexao.close();
 
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Lançamento cadastrado com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Evento cadastrado com sucesso!");
 
                     txtEvento.setText("Evento");
                     txtDescricao.setText("Breve descrição");
@@ -112,7 +112,85 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             }
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro no cadastro: " + e);
+            JOptionPane.showMessageDialog(null, "Erro no cadastro de evento: " + e);
+        }
+
+    }
+
+    private void alterar_evento() {
+
+        //a estrutura abixo confirma a remoção do usuário
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja alterar este evento?", "Atenção", JOptionPane.YES_NO_OPTION);
+
+        if (confirma == JOptionPane.YES_OPTION) {
+
+            Statement stmt = null;
+            String evento, materia, descricao, data, datalimite, status;
+            String idevento;
+
+            idevento = txtId.getText();
+
+            evento = txtEvento.getText();
+            materia = comboMateria.getSelectedItem().toString();
+            descricao = txtDescricao.getText();
+            data = lblDataCalendario.getText();
+            datalimite = lblDataLimite.getText();
+            status = comboStatus.getSelectedItem().toString();
+
+            String sql = "UPDATE tbl_eventos(nome_evento,disciplina_evento,descricao_evento,data_evento,data_limite,status_evento) VALUES(" + "'" + evento + "'" + "," + "'" + materia + "'" + "," + "'" + descricao + "'" + "," + "'" + data + "'" + "," + "'" + datalimite + "'" + "," + "'" + status + "'" + ") WHERE id_evento=" + idevento;
+
+            System.out.println(sql);
+
+            try {
+                conexao = ConexaoAEscolar.conector();
+                conexao.setAutoCommit(false);
+                stmt = (Statement) conexao.createStatement();
+
+                if ((txtEvento.getText().isEmpty()) || (txtDescricao.getText().isEmpty())) {
+
+                    JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios!");
+                } else {
+
+                    //a estrutura abixo é usada para confirmar a inserção dos dados na tabela
+                    int adicionado = stmt.executeUpdate(sql);
+
+                    stmt.close();
+                    conexao.commit();
+                    conexao.close();
+
+                    if (adicionado > 0) {
+                        JOptionPane.showMessageDialog(null, "Evento alterado com sucesso!");
+
+                        txtEvento.setText("Evento");
+                        txtDescricao.setText("Breve descrição");
+
+                    }
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro na alteração: " + e);
+            }
+        }
+
+    }
+
+    private void pesquisar_evento_id() {
+
+        String idevento = txtId.getText();
+
+        Statement stmt = null;
+
+        try {
+
+            String sql = "SELECT * FROM tbl_eventos WHERE id_evento = " + idevento;
+
+            conexao = ConexaoAEscolar.conector();
+            conexao.setAutoCommit(false);
+            stmt = (Statement) conexao.createStatement();
+            
+            rs = stmt.executeQuery(sql);
+
+        } catch (Exception e) {
         }
 
     }
@@ -147,6 +225,8 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         comboStatus = new javax.swing.JComboBox<>();
         lblDataCalendario = new java.awt.Label();
         lblDataHoje = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -318,6 +398,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         lblDataHoje.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDataHoje.setText("HOJE");
 
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Id");
+
+        txtId.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -332,39 +417,40 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                         .addGap(100, 100, 100)
                         .addComponent(lblDataCalendario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jCalendario, javax.swing.GroupLayout.PREFERRED_SIZE, 563, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 163, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(2, 2, 2)
-                                        .addComponent(comboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 151, Short.MAX_VALUE)
-                                        .addComponent(lblDataLimite))))
-                            .addComponent(txtEvento, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1)
-                            .addComponent(comboMateria, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(2, 2, 2)
+                                .addComponent(comboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDataLimite, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 151, Short.MAX_VALUE)
+                                .addComponent(lblDataLimite))))
+                    .addComponent(txtEvento, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(comboMateria, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDataLimite, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -374,12 +460,14 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel5)
+                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -437,7 +525,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(16, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -460,9 +548,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }//GEN-LAST:event_jCalendarioMouseClicked
 
     private void jCalendarioFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jCalendarioFocusGained
-        
+
         atualiza_datacalendario();
-        
+
     }//GEN-LAST:event_jCalendarioFocusGained
 
     private void jCalendarioPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jCalendarioPropertyChange
@@ -548,6 +636,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -563,5 +652,6 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     public static java.awt.Label lblUsuario;
     private javax.swing.JTextArea txtDescricao;
     private javax.swing.JTextField txtEvento;
+    private javax.swing.JTextField txtId;
     // End of variables declaration//GEN-END:variables
 }

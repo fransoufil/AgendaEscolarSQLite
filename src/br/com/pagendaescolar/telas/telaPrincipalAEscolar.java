@@ -8,9 +8,6 @@ package br.com.pagendaescolar.telas;
 import br.com.pagendaescolar.dal.ConexaoAEscolar;
 
 import java.sql.*;
-//import java.sql.Connection;
-//import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -193,8 +190,6 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
             try {
 
-                //conexao = ConexaoAEscolar.conector();
-                //conexao.setAutoCommit(false);
                 pst = conexao.prepareStatement(sql);
 
                 rs = pst.executeQuery();

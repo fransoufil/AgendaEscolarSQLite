@@ -49,9 +49,7 @@ public class telaLoginAEscolar extends javax.swing.JFrame {
 
                     telaPrincipalAEscolar principal = new telaPrincipalAEscolar();
                     principal.setVisible(true);
-                    //telaPrincipal.menUsu.setEnabled(true);
-                    //telaPrincipal.menCadusu.setEnabled(true);
-                    //telaPrincipal.menOssCli.setEnabled(true);
+                    
                     telaPrincipalAEscolar.lblUsuario.setText(rs.getString(2).toUpperCase());
                     telaPrincipalAEscolar.lblUsuario.setForeground(Color.orange);
                     this.dispose();//fecha a tela

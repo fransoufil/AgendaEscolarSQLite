@@ -29,6 +29,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
      * Creates new form telaPrincipal
      */
     public telaPrincipalAEscolar() {
+       
         initComponents();
         atualiza_datahoje();
         carregar_tabela_eventos();
@@ -117,13 +118,15 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }
 
     private void alterar_evento() {
-
+        
+        
         //a estrutura abixo confirma a remoção do usuário
         int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja alterar este evento?", "Atenção", JOptionPane.YES_NO_OPTION);
 
         if (confirma == JOptionPane.YES_OPTION) {
 
             Statement stmt = null;
+
             String evento, materia, descricao, data, datalimite, status;
             String idevento;
 
@@ -135,12 +138,15 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             data = lblDataCalendario.getText();
             datalimite = lblDataLimite.getText();
             status = comboStatus.getSelectedItem().toString();
+            
+            
 
-            String sql = "UPDATE tbl_eventos(nome_evento,disciplina_evento,descricao_evento,data_evento,data_limite,status_evento) VALUES(" + "'" + evento + "'" + "," + "'" + materia + "'" + "," + "'" + descricao + "'" + "," + "'" + data + "'" + "," + "'" + datalimite + "'" + "," + "'" + status + "'" + ") WHERE id_evento=" + idevento;
+            String sql = "UPDATE tbl_eventos SET nome_evento = " + "'" + evento + "'" + ", disciplina_evento= " + "'" + materia + "'" + ", descricao_evento= " + "'" + descricao + "'" + ", data_evento= " + "'" + data + "'" + ", data_limite= " + "'" + datalimite + "'" + ", status_evento= " + "'" + status + "'" + " WHERE id_evento=" + idevento;
 
             System.out.println(sql);
 
             try {
+
                 conexao = ConexaoAEscolar.conector();
                 conexao.setAutoCommit(false);
                 stmt = (Statement) conexao.createStatement();
@@ -174,9 +180,14 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }
 
     private void setar_campos() {
+        
+        conexao = ConexaoAEscolar.conector();
+            
 
         int setar = tblEventos.getSelectedRow();
         txtId.setText(tblEventos.getModel().getValueAt(setar, 0).toString());
+        
+       
 
     }
 
@@ -206,6 +217,8 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             lblDataCalendario.setText(rs.getString(5));
             lblDataLimite.setText(rs.getString(6));
             comboStatus.setSelectedItem(rs.getString(7));
+            
+            conexao.close();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro na pesquisa: " + e);
@@ -233,8 +246,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 //            
 //            rs = stmt.executeQuery(sqltabela);
             tblEventos.setModel(DbUtils.resultSetToTableModel(rs));
+            
             pst = null;
             rs = null;
+            
+            conexao.close();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -327,6 +343,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/update.png"))); // NOI18N
         btnAlterar.setToolTipText("ALTERAR");
+        btnAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("EXCLUIR");
@@ -642,12 +663,18 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         adicionar_evento();
+        carregar_tabela_eventos();
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void tblEventosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEventosMouseClicked
         setar_campos();
         pesquisar_evento_id();
     }//GEN-LAST:event_tblEventosMouseClicked
+
+    private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        alterar_evento();
+        carregar_tabela_eventos();
+    }//GEN-LAST:event_btnAlterarActionPerformed
 
     /**
      * @param args the command line arguments

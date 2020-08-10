@@ -29,7 +29,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
      * Creates new form telaPrincipal
      */
     public telaPrincipalAEscolar() {
-       
+
         initComponents();
         atualiza_datahoje();
         carregar_tabela_eventos();
@@ -83,8 +83,6 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         String sql = "INSERT INTO tbl_eventos(nome_evento,disciplina_evento,descricao_evento,data_evento,data_limite,status_evento) VALUES(" + "'" + evento + "'" + "," + "'" + materia + "'" + "," + "'" + descricao + "'" + "," + "'" + data + "'" + "," + "'" + datalimite + "'" + "," + "'" + status + "'" + ")";
 
-        System.out.println(sql);
-
         try {
             conexao = ConexaoAEscolar.conector();
             conexao.setAutoCommit(false);
@@ -95,7 +93,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios!");
             } else {
 
-                //a estrutura abixo é usada para confirmar a inserção dos dados na tabela
+                //a estrutura abaixo é usada para confirmar a inserção dos dados na tabela
                 int adicionado = stmt.executeUpdate(sql);
 
                 stmt.close();
@@ -118,8 +116,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }
 
     private void alterar_evento() {
-        
-        
+
         //a estrutura abixo confirma a remoção do usuário
         int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja alterar este evento?", "Atenção", JOptionPane.YES_NO_OPTION);
 
@@ -138,12 +135,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             data = "'" + lblDataCalendario.getText() + "'";
             datalimite = "'" + lblDataLimite.getText() + "'";
             status = "'" + comboStatus.getSelectedItem().toString() + "'";
-            
-            
 
             String sql = "UPDATE tbl_eventos SET nome_evento = " + evento + ", disciplina_evento= " + materia + ", descricao_evento= " + descricao + ", data_evento= " + data + ", data_limite= " + datalimite + ", status_evento= " + status + " WHERE id_evento=" + idevento;
 
-            System.out.println(sql);
 
             try {
 
@@ -156,7 +150,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios!");
                 } else {
 
-                    //a estrutura abixo é usada para confirmar a inserção dos dados na tabela
+                    //a estrutura abaixo é usada para confirmar a alteração dos dados na tabela
                     int adicionado = stmt.executeUpdate(sql);
 
                     stmt.close();
@@ -178,72 +172,56 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         }
 
     }
-    
-    private void deletar_evento(){
-        
-      //a estrutura abixo confirma a remoção do usuário
+
+    private void deletar_evento() {
+
+        //a estrutura abixo confirma a remoção do usuário
         int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja apagar este evento?", "Atenção", JOptionPane.YES_NO_OPTION);
 
         if (confirma == JOptionPane.YES_OPTION) {
 
             Statement stmt = null;
 
-            //String evento, materia, descricao, data, datalimite, status;
             String idevento;
 
             idevento = txtId.getText();
 
-//            evento = "'" + txtEvento.getText() + "'";
-//            materia = "'" + comboMateria.getSelectedItem().toString() + "'";
-//            descricao = "'" + txtDescricao.getText() + "'";
-//            data = "'" + lblDataCalendario.getText() + "'";
-//            datalimite = "'" + lblDataLimite.getText() + "'";
-//            status = "'" + comboStatus.getSelectedItem().toString() + "'";
-            
-            
-
             String sql = " DELETE FROM tbl_eventos WHERE id_evento=" + idevento;
-
-            System.out.println(sql);
-
+            
             try {
 
                 conexao = ConexaoAEscolar.conector();
                 conexao.setAutoCommit(false);
                 stmt = (Statement) conexao.createStatement();
-                    //a estrutura abixo é usada para confirmar a inserção dos dados na tabela
-                    //int adicionado = stmt.executeUpdate(sql);
-                    int deletado = stmt.executeUpdate(sql);
+                //a estrutura abaixo é usada para confirmar a ação na tabela
 
-                    stmt.close();
-                    conexao.commit();
-                    conexao.close();
+                int deletado = stmt.executeUpdate(sql);
 
-                    if (deletado > 0) {
-                        JOptionPane.showMessageDialog(null, "Evento deletado com sucesso!");
+                stmt.close();
+                conexao.commit();
+                conexao.close();
 
-                        txtEvento.setText("Evento");
-                        txtDescricao.setText("Breve descrição");
+                if (deletado > 0) {
+                    JOptionPane.showMessageDialog(null, "Evento apagado com sucesso!");
 
-                    }
-                
+                    txtEvento.setText("Evento");
+                    txtDescricao.setText("Breve descrição");
+
+                }
 
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Erro na alteração: " + e);
+                JOptionPane.showMessageDialog(null, "Erro no deletar: " + e);
             }
-        }  
-        
+        }
+
     }
 
     private void setar_campos() {
-        
+
         conexao = ConexaoAEscolar.conector();
-            
 
         int setar = tblEventos.getSelectedRow();
         txtId.setText(tblEventos.getModel().getValueAt(setar, 0).toString());
-        
-       
 
     }
 
@@ -273,7 +251,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             lblDataCalendario.setText(rs.getString(5));
             lblDataLimite.setText(rs.getString(6));
             comboStatus.setSelectedItem(rs.getString(7));
-            
+
             conexao.close();
 
         } catch (Exception e) {
@@ -288,7 +266,6 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
             String sqltabela = "SELECT * FROM tbl_eventos";
 
-            //Statement stmt = null;
             conexao = ConexaoAEscolar.conector();
             conexao.setAutoCommit(false);
 
@@ -296,16 +273,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
             rs = pst.executeQuery();
 
-            System.out.println(rs);
-
-//            stmt = (Statement) conexao.createStatement();
-//            
-//            rs = stmt.executeQuery(sqltabela);
             tblEventos.setModel(DbUtils.resultSetToTableModel(rs));
-            
+
             pst = null;
             rs = null;
-            
+
             conexao.close();
 
         } catch (Exception e) {

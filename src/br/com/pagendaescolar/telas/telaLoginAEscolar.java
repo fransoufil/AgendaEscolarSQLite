@@ -42,7 +42,7 @@ public class telaLoginAEscolar extends javax.swing.JFrame {
                 // alinha abaixo obtem o conteudo do campo perfil da tabela tbl_usuarios
                 String perfil = rs.getString(4);
                 //sout ctrl+espaço
-                System.out.println(perfil);
+               
 
                 //estrutura abaixo faz tratamento do perfil do usuario
                 if (perfil.equals("admin")) {
@@ -82,8 +82,7 @@ public class telaLoginAEscolar extends javax.swing.JFrame {
         
         //aqui chama o metodo conector
         conexao = ConexaoAEscolar.conector();
-        //a linha abaixo foi primeiro exemplo
-        System.out.println(conexao);
+        
         if (conexao != null) {
             //lblStatus.setText("Conectado! :-)");
             lblStatus.setIcon((new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/dbok.png"))));

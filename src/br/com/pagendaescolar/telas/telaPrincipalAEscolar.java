@@ -132,16 +132,16 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
             idevento = txtId.getText();
 
-            evento = txtEvento.getText();
-            materia = comboMateria.getSelectedItem().toString();
-            descricao = txtDescricao.getText();
-            data = lblDataCalendario.getText();
-            datalimite = lblDataLimite.getText();
-            status = comboStatus.getSelectedItem().toString();
+            evento = "'" + txtEvento.getText() + "'";
+            materia = "'" + comboMateria.getSelectedItem().toString() + "'";
+            descricao = "'" + txtDescricao.getText() + "'";
+            data = "'" + lblDataCalendario.getText() + "'";
+            datalimite = "'" + lblDataLimite.getText() + "'";
+            status = "'" + comboStatus.getSelectedItem().toString() + "'";
             
             
 
-            String sql = "UPDATE tbl_eventos SET nome_evento = " + "'" + evento + "'" + ", disciplina_evento= " + "'" + materia + "'" + ", descricao_evento= " + "'" + descricao + "'" + ", data_evento= " + "'" + data + "'" + ", data_limite= " + "'" + datalimite + "'" + ", status_evento= " + "'" + status + "'" + " WHERE id_evento=" + idevento;
+            String sql = "UPDATE tbl_eventos SET nome_evento = " + evento + ", disciplina_evento= " + materia + ", descricao_evento= " + descricao + ", data_evento= " + data + ", data_limite= " + datalimite + ", status_evento= " + status + " WHERE id_evento=" + idevento;
 
             System.out.println(sql);
 
@@ -177,6 +177,62 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
             }
         }
 
+    }
+    
+    private void deletar_evento(){
+        
+      //a estrutura abixo confirma a remoção do usuário
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja apagar este evento?", "Atenção", JOptionPane.YES_NO_OPTION);
+
+        if (confirma == JOptionPane.YES_OPTION) {
+
+            Statement stmt = null;
+
+            //String evento, materia, descricao, data, datalimite, status;
+            String idevento;
+
+            idevento = txtId.getText();
+
+//            evento = "'" + txtEvento.getText() + "'";
+//            materia = "'" + comboMateria.getSelectedItem().toString() + "'";
+//            descricao = "'" + txtDescricao.getText() + "'";
+//            data = "'" + lblDataCalendario.getText() + "'";
+//            datalimite = "'" + lblDataLimite.getText() + "'";
+//            status = "'" + comboStatus.getSelectedItem().toString() + "'";
+            
+            
+
+            String sql = " DELETE FROM tbl_eventos WHERE id_evento=" + idevento;
+
+            System.out.println(sql);
+
+            try {
+
+                conexao = ConexaoAEscolar.conector();
+                conexao.setAutoCommit(false);
+                stmt = (Statement) conexao.createStatement();
+                    //a estrutura abixo é usada para confirmar a inserção dos dados na tabela
+                    //int adicionado = stmt.executeUpdate(sql);
+                    int deletado = stmt.executeUpdate(sql);
+
+                    stmt.close();
+                    conexao.commit();
+                    conexao.close();
+
+                    if (deletado > 0) {
+                        JOptionPane.showMessageDialog(null, "Evento deletado com sucesso!");
+
+                        txtEvento.setText("Evento");
+                        txtDescricao.setText("Breve descrição");
+
+                    }
+                
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro na alteração: " + e);
+            }
+        }  
+        
     }
 
     private void setar_campos() {
@@ -351,6 +407,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         btnExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/delete.png"))); // NOI18N
         btnExcluir.setToolTipText("EXCLUIR");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         tblEventos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -675,6 +736,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         alterar_evento();
         carregar_tabela_eventos();
     }//GEN-LAST:event_btnAlterarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        deletar_evento();
+        carregar_tabela_eventos();
+    }//GEN-LAST:event_btnExcluirActionPerformed
 
     /**
      * @param args the command line arguments

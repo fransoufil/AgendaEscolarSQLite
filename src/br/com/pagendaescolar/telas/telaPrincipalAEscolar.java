@@ -6,12 +6,16 @@
 package br.com.pagendaescolar.telas;
 
 import br.com.pagendaescolar.dal.ConexaoAEscolar;
+import java.awt.Color;
+import java.awt.Component;
 
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import net.proteanit.sql.DbUtils;
 
 /**
@@ -33,6 +37,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         initComponents();
         atualiza_datahoje();
         carregar_tabela_eventos();
+        colorir_tabela();
 
     }
 
@@ -67,6 +72,44 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         lblDataHoje.setText(formatador.format(data));
 
+    }
+    
+    private void colorir_tabela() {
+        
+        try {
+            
+            tblEventos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                //A coluna do STATUS é 7, comeca do 0 - 1 - 2
+                Object ref = table.getValueAt(row, 6);//Coluna Status
+                
+                System.out.println(ref);
+
+                //Coloca cor em todas as linhas, que tem o STATUS "ABERTO"
+                if ((ref != null && ref.equals("Aberto"))) {//Se Status for igual a "ABERTO"
+                    setBackground(Color.ORANGE);//Preenche a linha de LARANJA
+                    setForeground(Color.BLACK);//E a fonte de PRETO
+                } else {
+                    boolean sel = isSelected;
+                    if (sel == true) {
+                        setBackground(getBackground());
+                        setForeground(getForeground());
+                    } else {//Se Status não for "Aberto" 
+                        setBackground(Color.WHITE);//Preenche a linha de branco
+                        setForeground(new Color(51, 51, 51));//E a fonte de preto
+                    }
+                }
+                return this;
+
+            }
+        });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro no colorir tabela: " + e);            
+        }
+        
+        
     }
 
     private void adicionar_evento() {
@@ -261,7 +304,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }
 
     private void carregar_tabela_eventos() {
-
+        
+        if (rbtTodos.isSelected()) {
+        
         try {
 
             String sqltabela = "SELECT * FROM tbl_eventos";
@@ -283,6 +328,56 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        
+    } else if (rbtAbertos.isSelected()){
+        
+        try {
+
+            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtAbertos.getText() + "'";
+
+            conexao = ConexaoAEscolar.conector();
+            conexao.setAutoCommit(false);
+
+            pst = conexao.prepareStatement(sqltabela);
+
+            rs = pst.executeQuery();
+
+            tblEventos.setModel(DbUtils.resultSetToTableModel(rs));
+
+            pst = null;
+            rs = null;
+
+            conexao.close();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        
+    }else{
+        try {
+
+            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtFechados.getText() + "'";
+
+            conexao = ConexaoAEscolar.conector();
+            conexao.setAutoCommit(false);
+
+            pst = conexao.prepareStatement(sqltabela);
+
+            rs = pst.executeQuery();
+
+            tblEventos.setModel(DbUtils.resultSetToTableModel(rs));
+
+            pst = null;
+            rs = null;
+
+            conexao.close();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        
+    }
+        
 
     }
 
@@ -295,6 +390,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jCalendario = new com.toedter.calendar.JCalendar();
         jLabel1 = new javax.swing.JLabel();
@@ -318,6 +414,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         lblDataHoje = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
+        rbtTodos = new javax.swing.JRadioButton();
+        rbtAbertos = new javax.swing.JRadioButton();
+        rbtFechados = new javax.swing.JRadioButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -328,6 +427,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         setTitle("AGENDA ESCOLAR");
 
         jPanel1.setBackground(new java.awt.Color(0, 51, 0));
+        jPanel1.setForeground(new java.awt.Color(255, 255, 255));
 
         jCalendario.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jCalendario.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -355,11 +455,12 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         jScrollPane1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
 
         txtDescricao.setColumns(20);
+        txtDescricao.setLineWrap(true);
         txtDescricao.setRows(5);
         jScrollPane1.setViewportView(txtDescricao);
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Lista de eventos em aberto:");
+        jLabel2.setText("Lista de eventos:");
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/pagendaescolar/icones/create.png"))); // NOI18N
         btnAdicionar.setToolTipText("INSERIR");
@@ -387,79 +488,79 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         tblEventos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Evento", "Matéria", "Descrição", "Dt Limite"
+                "Data", "Evento", "Matéria", "Descrição", "id"
             }
         ));
         tblEventos.setShowGrid(true);
@@ -509,6 +610,37 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
 
         txtId.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtId.setEnabled(false);
+
+        rbtTodos.setBackground(new java.awt.Color(0, 0, 0));
+        buttonGroup1.add(rbtTodos);
+        rbtTodos.setForeground(new java.awt.Color(255, 255, 255));
+        rbtTodos.setSelected(true);
+        rbtTodos.setText("Todos");
+        rbtTodos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbtTodosActionPerformed(evt);
+            }
+        });
+
+        rbtAbertos.setBackground(new java.awt.Color(0, 0, 0));
+        buttonGroup1.add(rbtAbertos);
+        rbtAbertos.setForeground(new java.awt.Color(255, 255, 255));
+        rbtAbertos.setText("Aberto");
+        rbtAbertos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbtAbertosActionPerformed(evt);
+            }
+        });
+
+        rbtFechados.setBackground(new java.awt.Color(0, 0, 0));
+        buttonGroup1.add(rbtFechados);
+        rbtFechados.setForeground(new java.awt.Color(255, 255, 255));
+        rbtFechados.setText("Fechado");
+        rbtFechados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbtFechadosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -563,13 +695,19 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(rbtTodos)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbtAbertos)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbtFechados)))
                 .addGap(21, 21, 21))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -597,7 +735,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                                     .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jScrollPane2)))
-                    .addComponent(jCalendario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jCalendario, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDataCalendario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -606,7 +744,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                         .addComponent(lblDataLimite))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(lblUsuario, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblDataHoje)))
+                        .addComponent(lblDataHoje))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(rbtTodos)
+                        .addComponent(rbtAbertos)
+                        .addComponent(rbtFechados)))
                 .addContainerGap())
         );
 
@@ -714,6 +856,18 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         carregar_tabela_eventos();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
+    private void rbtTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtTodosActionPerformed
+        carregar_tabela_eventos();
+    }//GEN-LAST:event_rbtTodosActionPerformed
+
+    private void rbtAbertosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtAbertosActionPerformed
+        carregar_tabela_eventos();
+    }//GEN-LAST:event_rbtAbertosActionPerformed
+
+    private void rbtFechadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtFechadosActionPerformed
+        carregar_tabela_eventos();
+    }//GEN-LAST:event_rbtFechadosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -754,6 +908,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnExcluir;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> comboMateria;
     private javax.swing.JComboBox<String> comboStatus;
     private com.toedter.calendar.JCalendar jCalendario;
@@ -775,6 +930,9 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     private javax.swing.JLabel lblDataHoje;
     private javax.swing.JLabel lblDataLimite;
     public static java.awt.Label lblUsuario;
+    private javax.swing.JRadioButton rbtAbertos;
+    private javax.swing.JRadioButton rbtFechados;
+    private javax.swing.JRadioButton rbtTodos;
     private javax.swing.JTable tblEventos;
     private javax.swing.JTextArea txtDescricao;
     private javax.swing.JTextField txtEvento;

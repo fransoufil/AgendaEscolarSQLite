@@ -7,6 +7,7 @@ package br.com.pagendaescolar.telas;
 
 import java.sql.*;
 import br.com.pagendaescolar.dal.ConexaoAEscolar;
+import br.com.pagendaescolar.dal.ConexaoPostgresql;
 
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -80,8 +81,11 @@ public class telaLoginAEscolar extends javax.swing.JFrame {
     public telaLoginAEscolar() {
         initComponents();
         
-        //aqui chama o metodo conector
+        //aqui chama o metodo conector do sqlite
         conexao = ConexaoAEscolar.conector();
+        //aqui chama a conecção ao postgresql, testado ok
+        //conexao = ConexaoPostgresql.conector();
+       
         
         if (conexao != null) {
             //lblStatus.setText("Conectado! :-)");

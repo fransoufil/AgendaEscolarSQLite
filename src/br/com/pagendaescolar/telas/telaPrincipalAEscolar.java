@@ -146,7 +146,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 if (adicionado > 0) {
                     JOptionPane.showMessageDialog(null, "Evento cadastrado com sucesso!");
 
-                    txtEvento.setText("Evento");
+                    txtEvento.setText("");
                     txtDescricao.setText("Breve descrição");
 
                 }
@@ -203,7 +203,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                     if (adicionado > 0) {
                         JOptionPane.showMessageDialog(null, "Evento alterado com sucesso!");
 
-                        txtEvento.setText("Evento");
+                        txtEvento.setText("");
                         txtDescricao.setText("Breve descrição");
 
                     }
@@ -247,7 +247,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
                 if (deletado > 0) {
                     JOptionPane.showMessageDialog(null, "Evento apagado com sucesso!");
 
-                    txtEvento.setText("Evento");
+                    txtEvento.setText("");
                     txtDescricao.setText("Breve descrição");
 
                 }
@@ -309,7 +309,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         
         try {
 
-            String sqltabela = "SELECT * FROM tbl_eventos";
+            String sqltabela = "SELECT * FROM tbl_eventos ORDER BY data_evento";
 
             conexao = ConexaoAEscolar.conector();
             conexao.setAutoCommit(false);
@@ -333,7 +333,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         
         try {
 
-            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtAbertos.getText() + "'";
+            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtAbertos.getText() + "' ORDER BY data_evento";
 
             conexao = ConexaoAEscolar.conector();
             conexao.setAutoCommit(false);
@@ -356,7 +356,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     }else{
         try {
 
-            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtFechados.getText() + "'";
+            String sqltabela = "SELECT * FROM tbl_eventos WHERE status_evento = " + "'" + rbtFechados.getText() + "' ORDER BY data_evento";
 
             conexao = ConexaoAEscolar.conector();
             conexao.setAutoCommit(false);
@@ -457,6 +457,7 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         txtDescricao.setColumns(20);
         txtDescricao.setLineWrap(true);
         txtDescricao.setRows(5);
+        txtDescricao.setAutoscrolls(false);
         jScrollPane1.setViewportView(txtDescricao);
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -581,6 +582,11 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
         lblUsuario.setForeground(new java.awt.Color(255, 255, 255));
         lblUsuario.setText("NOME DO USUARIO");
 
+        jDataLimite.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jDataLimiteMouseClicked(evt);
+            }
+        });
         jDataLimite.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 jDataLimitePropertyChange(evt);
@@ -867,6 +873,23 @@ public class telaPrincipalAEscolar extends javax.swing.JFrame {
     private void rbtFechadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbtFechadosActionPerformed
         carregar_tabela_eventos();
     }//GEN-LAST:event_rbtFechadosActionPerformed
+
+    private void jDataLimiteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDataLimiteMouseClicked
+        System.out.println(jDataLimite.getDate());
+
+        if (jDataLimite.getDate() == null) {
+
+            lblDataLimite.setText("Limite");
+
+        } else {
+
+            SimpleDateFormat sdfdatalimite = new SimpleDateFormat("dd/MM/yyyy");
+
+            String datalimite = sdfdatalimite.format(jDataLimite.getDate());
+
+            lblDataLimite.setText(datalimite);
+        }
+    }//GEN-LAST:event_jDataLimiteMouseClicked
 
     /**
      * @param args the command line arguments
